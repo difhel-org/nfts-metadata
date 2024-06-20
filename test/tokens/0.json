@@ -1,0 +1,11 @@
+{
+  "name": "Bulo4ka",
+  "description": "булочка булочка булочка",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/0.jpg",
+  "attributes": [
+    {
+      "trait_type": "Цвет",
+      "value": "персиковый"
+    }
+  ]
+}
