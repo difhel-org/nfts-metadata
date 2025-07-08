@@ -1,5 +1,7 @@
 {
+  "uri": "https://difhel-org.github.io/nfts-metadata/persik-jetton/metadata.json",
   "name": "PERSIK",
   "symbol": "PERSIK",
-  "decimals": 9
+  "decimals": 9,
+  "image": "https://difhel-org.github.io/nfts-metadata/persik-jetton/persik_token.png"
 }
