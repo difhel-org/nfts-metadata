@@ -18,6 +18,7 @@
     "mint": "bun scripts/cli.ts mint",
     "build:contracts": "bun scripts/build-contracts.ts",
     "typecheck": "tsc --noEmit",
-    "test": "bun test"
+    "test": "bun test",
+    "send": "bun scripts/cli.ts send"
   }
 }

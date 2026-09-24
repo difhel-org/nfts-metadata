@@ -72,6 +72,21 @@ export class Chain {
     const status = await this.absentStatus(address, state.lastTransaction?.lt);
     return { status };
   }
+  async nftForTransfer(address: Address) {
+    const state = await this.state(address);
+    if (state.state !== 'active' || !state.code) throw new Error('NFT is not active (not deployed, burned or frozen)');
+    const { stack } = await this.read(() => this.client.runMethod(address, 'get_nft_data'));
+    if (!stack.readBoolean()) throw new Error('NFT is not initialized');
+    const index = stack.readBigNumber();
+    const collection = stack.readAddressOpt();
+    const owner = stack.readAddress();
+    const content = stack.readCell();
+    if (collection) {
+      const result = await this.read(() => this.client.runMethod(collection, 'get_nft_address_by_index', [{ type: 'int', value: index }]));
+      if (!result.stack.readAddress().equals(address)) throw new Error('NFT address is not recognized by its claimed collection');
+    }
+    return { index, collection, owner, content, code: Cell.fromBoc(state.code)[0]! };
+  }
   async absentStatus(address: Address, latestLt?: string): Promise<'burned' | 'non-existent'> {
     // Account state alone loses the distinction after destruction. Walk indexed history,
     // including dust/top-ups after a burn, until the most recent active incarnation.

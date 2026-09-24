@@ -64,3 +64,11 @@ export function parseItem(data: Cell, collection: Address, index: number) {
   slice.endParse();
   return { owner, content };
 }
+
+// TEP-62 transfer: 1 nanoton forwards ownership_assigned; excess returns to sender.
+export const NFT_TRANSFER_VALUE = toNano('0.1');
+export function nftTransferBody(recipient: Address, sender: Address, queryId: bigint): Cell {
+  return beginCell().storeUint(0x5fcc3d14, 32).storeUint(queryId, 64)
+    .storeAddress(recipient).storeAddress(sender).storeMaybeRef(null)
+    .storeCoins(1n).storeBit(0).endCell();
+}

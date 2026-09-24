@@ -4,7 +4,7 @@ import type { Contract, ContractProvider, Sender, StateInit, Transaction } from 
 import { Blockchain } from '@ton/sandbox';
 import { keyPairFromSeed } from '@ton/crypto';
 import { WalletContractV4 } from '@ton/ton';
-import { BURN_ADDRESS, collectionFor, COLLECTION_URL, ITEM_PREFIX, itemFor, mintBody, mintValue, parseItem, snake } from '../scripts/contracts';
+import { BURN_ADDRESS, collectionFor, COLLECTION_URL, ITEM_PREFIX, itemFor, mintBody, mintValue, parseItem, snake, nftTransferBody, NFT_TRANSFER_VALUE } from '../scripts/contracts';
 import { walletFor } from '../scripts/wallet';
 import { isBurn } from '../scripts/network';
 import type { HistoryTransaction } from '../scripts/network';
@@ -134,7 +134,7 @@ describe('pinned nft-v1.1 contracts in TVM', () => {
   });
   for (const version of ['v4r2', 'w5'] as const) {
     for (const network of ['mainnet', 'testnet'] as const) {
-      test(`${version} / ${network}: signed wallet message deploys collection + NFT to derived owner`, async () => {
+      test(`${version} / ${network}: signed wallet messages deploy and transfer NFT`, async () => {
         const chain = await Blockchain.create();
         const funder = await chain.treasury('funder');
         const keys = keyPairFromSeed(Buffer.alloc(32, 42)); // Public test fixture, never a live wallet.
@@ -150,6 +150,17 @@ describe('pinned nft-v1.1 contracts in TVM', () => {
         expect(await opened.getSeqno()).toBe(1);
         const nft = chain.openContract(new ContractHandle(itemFor(config.address, 0).address));
         expect((await nft.getItem()).owner.equals(wallet.address)).toBe(true);
+        const transferArgs = { seqno: 1, secretKey: keys.secretKey, sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS,
+          messages: [internal({ to: nft.address, bounce: true, value: NFT_TRANSFER_VALUE, body: nftTransferBody(funder.address, wallet.address, 12n) })] };
+        const transferBody = wallet instanceof WalletContractV4 ? await wallet.createTransfer(transferArgs) : await wallet.createTransfer(transferArgs);
+        const sent = await opened.send(transferBody);
+        expect(await opened.getSeqno()).toBe(2);
+        expect((await nft.getItem()).owner.equals(funder.address)).toBe(true);
+        expect((await nft.getItem()).content).toBe('0.json');
+        const messages = sent.transactions.flatMap(tx => [...tx.outMessages.values()]);
+        expect(messages.some(msg => msg.info.type === 'internal' && msg.info.dest.equals(funder.address) && msg.info.value.coins === 1n && msg.body.beginParse().preloadUint(32) === 0x05138d91)).toBe(true);
+        expect(messages.some(msg => msg.info.type === 'internal' && msg.info.dest.equals(wallet.address) && msg.body.bits.length >= 32 && msg.body.beginParse().preloadUint(32) === 0xd53276db)).toBe(true);
+
       });
     }
   }

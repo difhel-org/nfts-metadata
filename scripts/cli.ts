@@ -1,3 +1,4 @@
+import { sendCommand } from './send';
 import { Address, Cell, beginCell, external, fromNano, internal, SendMode, storeMessage } from '@ton/core';
 import { WalletContractV4 } from '@ton/ton';
 import { randomBytes } from 'node:crypto';
@@ -19,7 +20,8 @@ async function confirm() {
 
 export async function main(args = process.argv.slice(2), env = process.env, confirmation: () => Promise<boolean> = confirm) {
   const [command, ...rest] = args;
-  if (command !== 'info' && command !== 'mint') throw new Error('Usage: bun run info | bun run mint <start index> <stop index>');
+  if (command === 'send') return sendCommand(rest, env, confirmation);
+  if (command !== 'info' && command !== 'mint') throw new Error('Usage: bun run info | bun run mint <start index> <stop index> | bun run send <index|nft address> <recipient address>');
   if (command === 'info' && rest.length) throw new Error('Usage: bun run info');
   const range = command === 'mint' ? parseRange(rest) : undefined;
   const catalog = await loadCatalog();

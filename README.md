@@ -104,6 +104,36 @@ message is not proof that all child deployments succeeded. After a partially
 successful batch, repeat the range: live NFTs are skipped. Avoid concurrent mint
 processes or other wallet transactions while confirming/submitting.
 
+## Transfer an NFT
+
+```sh
+bun run send 0 <recipient-address>
+bun run send <nft-address> <recipient-address>
+```
+
+An index selects the NFT from the Persik collection derived from your current
+wallet configuration. An explicit NFT address can also select a standard TEP-62
+NFT from another collection, provided the `.env` wallet owns it. This form works
+when an NFT has been received by a wallet other than the collection admin.
+
+The CLI checks `get_nft_data`, ownership and the collection's
+`get_nft_address_by_index`, then displays the network, NFT, sender, recipient and
+attached amount before **`Confirm? y/n`**. Ownership, metadata, contract code,
+wallet balance, signature authentication and seqno are rechecked before signing.
+After submission it waits for the on-chain owner to match the recipient.
+
+Recipient must be a raw or friendly basechain address (DNS names are not resolved).
+A testnet-only address is rejected on mainnet. The zero burn address is rejected
+by `send`, because sending this collection's NFTs there destroys them.
+
+Each transfer attaches **0.1 TON** to the NFT and forwards **1 nanoton** in the
+ownership notification. Excess TON returns to the sender. A 0.05 TON wallet fee
+buffer is also required; attached value is not an exact fee estimate.
+The existing `.env` wallet/network/API settings and request rate apply.
+Cancellation sends nothing. Submission is never automatically retried. If a
+network error or timeout occurs after submission, inspect ownership and wallet
+transactions before retrying. `info` shows deployment state, not ownership.
+
 ## Stable deployment identity
 
 Collection StateInit contains the derived admin, index 0, pinned NFT code,
@@ -121,8 +151,8 @@ minting so the raw URLs are publicly available.
 
 Burn uses the standard TEP-62 transfer to
 `0:0000000000000000000000000000000000000000000000000000000000000000`.
-This CLI intentionally exposes only `info` and `mint`; the owner can burn using
-a wallet that supports that operation.
+The CLI exposes `info`, `mint` and `send`; the owner can burn using a wallet
+that supports that operation.
 
 ## Source and validation
 
@@ -141,6 +171,6 @@ bun test
 
 Tests execute the compiled contracts in the TON sandbox: raw metadata getters,
 all 20 NFTs, owner-only burn/refund, same-address re-mint, unauthorized requests,
-index ordering, V4R2/W5 signed deployment on both network configurations,
+index ordering, V4R2/W5 signed deployment and transfers on both networks,
 confirmation cancellation and history-based status classification. They use
 synthetic test keys and do not submit transactions to a public network.
