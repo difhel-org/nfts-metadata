@@ -1,0 +1,31 @@
+{
+  "name": "Rainy Day Persik #18",
+  "description": "Rain or shine, Persik keeps the node online and watches new blocks arrive.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/18.png",
+  "attributes": [
+    {
+      "trait_type": "Model Number",
+      "value": "#18"
+    },
+    {
+      "trait_type": "Purpose",
+      "value": "Testing WalletTg contract in Telegram and My Wallet"
+    },
+    {
+      "trait_type": "Mint Date",
+      "value": "25.09.2026"
+    },
+    {
+      "trait_type": "Fur Color",
+      "value": "Orange"
+    },
+    {
+      "trait_type": "Outfit",
+      "value": "Raincoat"
+    },
+    {
+      "trait_type": "Background",
+      "value": "Lavender"
+    }
+  ]
+}
