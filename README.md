@@ -46,8 +46,11 @@ Persik the Scientist #1| ✅ deployed      | EQ...
 Persik in Orbit #2     | 🔥 burned        | EQ...
 ```
 
-These are illustrative rows, not the actual deployment state. Addresses are
-printed in bounceable `EQ...` form on both networks; the network is shown separately.
+These are illustrative rows, not the actual deployment state. Wallet addresses are
+printed in non-bounceable form (`UQ...` on mainnet, `0Q...` on testnet).
+Collection and NFT addresses use bounceable form (`EQ...` on mainnet, `kQ...`
+on testnet). The network is also shown separately. These display flags do not
+change the underlying account address or the outgoing message's bounce flag.
 
 Status comes from account state and Toncenter transaction history, not metadata
 or `nextItemIndex`. A burn requires a successful NFT transfer to the basechain

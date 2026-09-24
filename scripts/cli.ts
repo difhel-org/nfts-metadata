@@ -8,7 +8,6 @@ import { collectionFor, itemFor, mintBody, mintValue, parseItem, ITEM_CODE, WALL
 import { Chain } from './network';
 import { loadWallet } from './wallet';
 
-const friendly = (address: Address) => address.toString({ bounceable: true, urlSafe: true, testOnly: false });
 export const isConfirmation = (answer: string) => answer.trim().toLowerCase() === 'y';
 async function confirm() {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -25,12 +24,14 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
   const selected = range ? selectRange(catalog.items, ...range) : catalog.items;
   const { wallet, keys, network, apiKey, version } = await loadWallet(env);
   try {
+    const walletAddress = wallet.address.toString({ bounceable: false, urlSafe: true, testOnly: network === 'testnet' });
+    const friendlyContract = (address: Address) => address.toString({ bounceable: true, urlSafe: true, testOnly: network === 'testnet' });
     const chain = new Chain(network, apiKey);
     const collection = collectionFor(wallet.address);
     const openedWallet = chain.client.open(wallet);
     console.log(`Network: ${network}`);
-    console.log(`Wallet (${version}) / NFT owner: ${friendly(wallet.address)}`);
-    console.log(`Collection: ${catalog.name} | ${friendly(collection.address)}`);
+    console.log(`Wallet (${version}) / NFT owner: ${walletAddress}`);
+    console.log(`Collection: ${catalog.name} | ${friendlyContract(collection.address)}`);
     console.log('Reading on-chain state…');
     const collectionState = await chain.collection(collection.address, wallet.address);
     console.log(`Collection status: ${collectionState.deployed ? '✅ deployed' : '❌ non-existent'}; next index: ${collectionState.nextIndex}`);
@@ -40,7 +41,7 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
       const { status } = await chain.nft(address, collection.address, item.index);
       rows.push({ ...item, address, status });
     }
-    console.table(rows.map(row => ({ Name: row.name, Status: STATUS[row.status], Address: friendly(row.address) })));
+    console.table(rows.map(row => ({ Name: row.name, Status: STATUS[row.status], Address: friendlyContract(row.address) })));
     if (command === 'info') return;
     const pending = rows.filter(row => row.status !== 'deployed');
     if (!pending.length) { console.log('All selected NFTs are already deployed. Nothing to send.'); return; }
@@ -57,10 +58,10 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
       if (!stack.readBoolean()) throw new Error('W5 signature authentication is disabled');
     }
     const seqno = await chain.read(() => openedWallet.getSeqno());
-    console.log(`\nFrom: ${friendly(wallet.address)}`);
-    console.log(`Owner of every minted NFT: ${friendly(wallet.address)}`);
-    console.log(`Collection: ${friendly(collection.address)}${collectionState.deployed ? '' : ' (will be deployed)'}`);
-    console.table(pending.map(row => ({ Name: row.name, Action: row.status === 'burned' ? 're-mint' : 'mint', Address: friendly(row.address) })));
+    console.log(`\nFrom: ${walletAddress}`);
+    console.log(`Owner of every minted NFT: ${walletAddress}`);
+    console.log(`Collection: ${friendlyContract(collection.address)}${collectionState.deployed ? '' : ' (will be deployed)'}`);
+    console.table(pending.map(row => ({ Name: row.name, Action: row.status === 'burned' ? 're-mint' : 'mint', Address: friendlyContract(row.address) })));
     console.log(`Already deployed and skipped: ${rows.length - pending.length}`);
     console.log(`Send: ${fromNano(value)} TON to collection, plus wallet network fees.`);
     console.log(`Wallet balance: ${fromNano(walletState.balance)} TON. Fee buffer: ${fromNano(WALLET_FEE_BUFFER)} TON (not an exact fee estimate).`);
@@ -113,7 +114,7 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
         const actual = parseItem(Cell.fromBoc(state.data)[0]!, collection.address, index);
         if (!actual.owner.equals(wallet.address) || actual.content !== `${index}.json`) throw new Error(`NFT #${index}: owner or metadata differs from the approved plan; inspect transactions`);
         unresolved.delete(index);
-        console.log(`✅ ${row.name} | ${friendly(row.address)}`);
+        console.log(`✅ ${row.name} | ${friendlyContract(row.address)}`);
       }
     }
     if (unresolved.size) throw new Error(`Confirmation timed out for indices: ${[...unresolved.keys()].join(', ')}. Submission may be partially complete. Run bun run info before retrying; deployed NFTs will be skipped`);
