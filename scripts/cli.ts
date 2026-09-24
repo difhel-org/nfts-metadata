@@ -26,7 +26,7 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
   try {
     const walletAddress = wallet.address.toString({ bounceable: false, urlSafe: true, testOnly: network === 'testnet' });
     const friendlyContract = (address: Address) => address.toString({ bounceable: true, urlSafe: true, testOnly: network === 'testnet' });
-    const chain = new Chain(network, apiKey);
+    const chain = new Chain(network, apiKey, message => console.log(message));
     const collection = collectionFor(wallet.address);
     const openedWallet = chain.client.open(wallet);
     console.log(`Network: ${network}`);
@@ -35,10 +35,26 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
     console.log('Reading on-chain state…');
     const collectionState = await chain.collection(collection.address, wallet.address);
     console.log(`Collection status: ${collectionState.deployed ? '✅ deployed' : '❌ non-existent'}; next index: ${collectionState.nextIndex}`);
-    const rows: (NftRecord & { address: Address; status: NftStatus })[] = [];
-    for (const item of selected) {
+    const inspectNft = async (item: NftRecord, position: number, total: number) => {
       const { address } = itemFor(collection.address, item.index);
-      const { status } = await chain.nft(address, collection.address, item.index);
+      const label = `[${position}/${total}] ${item.name}`;
+      const started = Date.now();
+      console.log(`${label}: checking account and burn history…`);
+      const heartbeat = setInterval(() => console.log(`${label}: still waiting for Toncenter (${Math.round((Date.now() - started) / 1000)}s)…`), 10_000);
+      try {
+        const result = await chain.nft(address, collection.address, item.index);
+        console.log(`${label}: ${STATUS[result.status]} (${((Date.now() - started) / 1000).toFixed(1)}s)`);
+        return { ...result, address };
+      } catch (error) {
+        throw new Error(`NFT #${item.index} (${friendlyContract(address)}): ${error instanceof Error ? error.message : 'State check failed'}`);
+      } finally {
+        clearInterval(heartbeat);
+      }
+    };
+    console.log(`Checking ${selected.length} NFT(s).${apiKey ? '' : ' Public API requests are throttled; 20 absent NFTs take about a minute.'}`);
+    const rows: (NftRecord & { address: Address; status: NftStatus })[] = [];
+    for (const [position, item] of selected.entries()) {
+      const { status, address } = await inspectNft(item, position + 1, selected.length);
       rows.push({ ...item, address, status });
     }
     console.table(rows.map(row => ({ Name: row.name, Status: STATUS[row.status], Address: friendlyContract(row.address) })));
@@ -73,8 +89,8 @@ export async function main(args = process.argv.slice(2), env = process.env, conf
     console.log('Rechecking the approved plan…');
     const freshCollection = await chain.collection(collection.address, wallet.address);
     if (freshCollection.deployed !== collectionState.deployed || freshCollection.nextIndex !== collectionState.nextIndex) throw new Error('Collection changed while waiting. Run mint again to review a fresh plan');
-    for (const row of pending) {
-      const fresh = await chain.nft(row.address, collection.address, row.index);
+    for (const [position, row] of pending.entries()) {
+      const fresh = await inspectNft(row, position + 1, pending.length);
       if (fresh.status !== row.status) throw new Error(`NFT #${row.index} changed while waiting. Run mint again`);
     }
     const freshWallet = await chain.state(wallet.address);

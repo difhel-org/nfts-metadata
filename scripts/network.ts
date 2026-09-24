@@ -28,7 +28,7 @@ export class Chain {
   readonly client: TonClient;
   private nextRequest = 0;
   private readonly base: string;
-  constructor(readonly network: Network, private readonly apiKey?: string) {
+  constructor(readonly network: Network, private readonly apiKey?: string, private readonly report: (message: string) => void = () => {}) {
     this.base = network === 'mainnet' ? 'https://toncenter.com' : 'https://testnet.toncenter.com';
     this.client = new TonClient({ endpoint: `${this.base}/api/v2/jsonRPC`, apiKey, timeout: 20_000 });
   }
@@ -40,7 +40,9 @@ export class Chain {
       catch (error) {
         const status = (error as { response?: { status?: number }; status?: number }).response?.status ?? (error as { status?: number }).status;
         if (attempt >= 3 || (status !== 429 && status !== 503)) throw error;
-        await Bun.sleep(1500 * 2 ** attempt);
+        const delay = 1500 * 2 ** attempt;
+        this.report(`Toncenter HTTP ${status}: retry ${attempt + 1}/3 in ${delay / 1000}s…`);
+        await Bun.sleep(delay);
       }
     }
   }

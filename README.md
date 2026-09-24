@@ -27,7 +27,10 @@ TONCENTER_API_KEY=
 - `TON_NETWORK` is optional: `mainnet` by default, or `testnet`. W5 uses the
   corresponding network global ID (-239 / -3). The network is always displayed.
 - `TONCENTER_API_KEY` is optional. Without it, requests are throttled to suit
-  the public Toncenter API. Reading all 20 NFTs can take about a minute.
+  the public Toncenter API. Reading all 20 NFTs can take about a minute: each
+  absent NFT needs an account lookup and a history lookup, with at least 1.2 seconds
+  between requests. The CLI reports each NFT as it is checked, prints a heartbeat
+  during longer waits and reports HTTP 429/503 retries before the final table.
 - `.env` files are ignored by Git. The seed is used locally and never sent to APIs.
 
 ## Inspect
