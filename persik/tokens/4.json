@@ -1,11 +1,11 @@
 {
-  "name": "Doctor Persik #14",
-  "description": "A gentle checkup for every smart contract, from the fluffiest specialist on the blockchain.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
-  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/14.png",
+  "name": "Persik Express #4",
+  "description": "Your next transaction is in excellent paws, traveling from wallet to wallet across the TON network.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/4.png",
   "attributes": [
     {
       "trait_type": "Model Number",
-      "value": "#14"
+      "value": "#4"
     },
     {
       "trait_type": "Purpose",
@@ -21,7 +21,7 @@
     },
     {
       "trait_type": "Outfit",
-      "value": "Doctor"
+      "value": "Courier"
     },
     {
       "trait_type": "Background",

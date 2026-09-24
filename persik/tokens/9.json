@@ -1,7 +1,7 @@
 {
   "name": "Inspector Persik #9",
   "description": "Following the on-chain trail, Inspector Persik tracks down every missing transaction and suspicious crumb.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
-  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/9.png",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/9.png",
   "attributes": [
     {
       "trait_type": "Model Number",

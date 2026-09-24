@@ -1,11 +1,11 @@
 {
-  "name": "Rainy Day Persik #18",
-  "description": "Rain or shine, Persik keeps the node online and watches new blocks arrive.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
-  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/18.png",
+  "name": "Persik the Scientist #1",
+  "description": "A curious little scientist experiments with smart contracts, one tiny blockchain breakthrough at a time.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/1.png",
   "attributes": [
     {
       "trait_type": "Model Number",
-      "value": "#18"
+      "value": "#1"
     },
     {
       "trait_type": "Purpose",
@@ -21,7 +21,7 @@
     },
     {
       "trait_type": "Outfit",
-      "value": "Raincoat"
+      "value": "Scientist"
     },
     {
       "trait_type": "Background",

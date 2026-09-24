@@ -1,11 +1,11 @@
 {
-  "name": "Chef Persik #6",
-  "description": "Chef Persik batches fresh transactions into the next block, seasoned with a little mischief.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
-  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/6.png",
+  "name": "Persik Off the Map #13",
+  "description": "Exploring the uncharted shards of the TON blockchain, one curious pawstep at a time.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/13.png",
   "attributes": [
     {
       "trait_type": "Model Number",
-      "value": "#6"
+      "value": "#13"
     },
     {
       "trait_type": "Purpose",
@@ -21,7 +21,7 @@
     },
     {
       "trait_type": "Outfit",
-      "value": "Chef"
+      "value": "Explorer"
     },
     {
       "trait_type": "Background",

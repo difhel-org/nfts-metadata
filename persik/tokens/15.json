@@ -1,11 +1,11 @@
 {
-  "name": "Persik the Developer #3",
-  "description": "A fresh build, a warm laptop, and a focused orange cat bringing the next smart contract to life.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
-  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/test/tokens/3.png",
+  "name": "Persik Ready for Takeoff #15",
+  "description": "This transaction is cleared for takeoff; the fluffy pilot will land only after blockchain finality.\n\nOnce this NFT has served its testing purpose, feel free to keep it as a souvenir or transfer it back to tonsbid.t.me.",
+  "image": "https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/15.png",
   "attributes": [
     {
       "trait_type": "Model Number",
-      "value": "#3"
+      "value": "#15"
     },
     {
       "trait_type": "Purpose",
@@ -21,7 +21,7 @@
     },
     {
       "trait_type": "Outfit",
-      "value": "Developer"
+      "value": "Pilot"
     },
     {
       "trait_type": "Background",
