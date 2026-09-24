@@ -1,3 +1,4 @@
+import { RequestLimiter, requestsPerSecond } from './requests';
 import { Address, Cell } from '@ton/core';
 import { TonClient } from '@ton/ton';
 import { BURN_ADDRESS, COLLECTION_CODE, ITEM_CODE, collectionData, parseItem } from './contracts';
@@ -26,17 +27,16 @@ export function isBurn(tx: HistoryTransaction): boolean {
 }
 export class Chain {
   readonly client: TonClient;
-  private nextRequest = 0;
+  private readonly limiter: RequestLimiter;
   private readonly base: string;
-  constructor(readonly network: Network, private readonly apiKey?: string, private readonly report: (message: string) => void = () => {}) {
+  constructor(readonly network: Network, private readonly apiKey?: string, private readonly report: (message: string) => void = () => {}, rps = requestsPerSecond(undefined, Boolean(apiKey))) {
+    this.limiter = new RequestLimiter(rps);
     this.base = network === 'mainnet' ? 'https://toncenter.com' : 'https://testnet.toncenter.com';
     this.client = new TonClient({ endpoint: `${this.base}/api/v2/jsonRPC`, apiKey, timeout: 20_000 });
   }
   async read<T>(fn: () => Promise<T>): Promise<T> {
     for (let attempt = 0; ; attempt++) {
-      await Bun.sleep(Math.max(0, this.nextRequest - Date.now()));
-      this.nextRequest = Date.now() + (this.apiKey ? 300 : 1200);
-      try { return await fn(); }
+      try { return await this.limiter.run(fn); }
       catch (error) {
         const status = (error as { response?: { status?: number }; status?: number }).response?.status ?? (error as { status?: number }).status;
         if (attempt >= 3 || (status !== 429 && status !== 503)) throw error;
@@ -46,6 +46,8 @@ export class Chain {
       }
     }
   }
+  // Submission shares the rate limiter but is never retried.
+  sendFile(boc: Buffer) { return this.limiter.run(() => this.client.sendFile(boc)); }
   state(address: Address) { return this.read(() => this.client.getContractState(address)); }
   async collection(address: Address, admin: Address) {
     const state = await this.state(address);

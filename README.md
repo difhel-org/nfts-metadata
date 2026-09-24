@@ -26,11 +26,19 @@ TONCENTER_API_KEY=
   and `w5` (Wallet V5R1). Workchain 0, standard wallet IDs; W5 subwallet 0.
 - `TON_NETWORK` is optional: `mainnet` by default, or `testnet`. W5 uses the
   corresponding network global ID (-239 / -3). The network is always displayed.
-- `TONCENTER_API_KEY` is optional. Without it, requests are throttled to suit
-  the public Toncenter API. Reading all 20 NFTs can take about a minute: each
-  absent NFT needs an account lookup and a history lookup, with at least 1.2 seconds
-  between requests. The CLI reports each NFT as it is checked, prints a heartbeat
-  during longer waits and reports HTTP 429/503 retries before the final table.
+- `TONCENTER_API_KEY` is optional.
+- `TONCENTER_RPS` sets the maximum request starts per second, shared by API v2,
+  API v3, retries and submission. Default: **0.8** without an API key, **3** with
+  a key. Accepts positive numbers up to 1000, including fractional rates.
+  Set it to the rate allowed by your Toncenter plan, for example `TONCENTER_RPS=10`.
+  This controls request rate, not simultaneous request count. A higher local
+  limit does not increase the provider's quota; HTTP 429/503 reads use backoff.
+- NFT checks run in parallel (up to 8 at a time) while respecting that shared
+  rate. Results stay in index order. Twenty absent NFTs require about 40 reads:
+  roughly 40 seconds at 1 req/s or 4 seconds at 10 req/s, plus network latency.
+- In a terminal, progress updates a single line (`Fetching 7/20 NFTs …`) and
+  clears it before the table, confirmation prompt or error. Redirected output
+  contains final results without progress lines or terminal escape sequences.
 - `.env` files are ignored by Git. The seed is used locally and never sent to APIs.
 
 ## Inspect

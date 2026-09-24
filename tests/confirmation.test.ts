@@ -13,7 +13,6 @@ for (const version of ['v4r2', 'w5']) for (const network of ['mainnet', 'testnet
     const nft = spyOn(Chain.prototype, 'nft').mockResolvedValue({ status: 'non-existent' });
     const state = spyOn(Chain.prototype, 'state').mockResolvedValue({ state: 'uninitialized', balance: toNano('10'), code: null, data: null,
       lastTransaction: null, extra_currencies: undefined, blockId: { workchain: 0, shard: '', seqno: 1 }, timestampt: 0 });
-    const open = spyOn(TonClient.prototype, 'open').mockReturnValue({ getSeqno: async () => 0 } as never);
     const send = spyOn(TonClient.prototype, 'sendFile').mockImplementation(async () => { throw new Error('Unexpected submission'); });
     const log = spyOn(console, 'log').mockImplementation(() => {});
     const table = spyOn(console, 'table').mockImplementation(() => {});
@@ -38,7 +37,7 @@ for (const version of ['v4r2', 'w5']) for (const network of ['mainnet', 'testnet
       expect(send).not.toHaveBeenCalled();
       expect(log.mock.calls.flat().join(' ')).toContain('Cancelled.');
     } finally {
-      for (const mock of [collection, nft, state, open, send, log, table]) mock.mockRestore();
+      for (const mock of [collection, nft, state, send, log, table]) mock.mockRestore();
     }
   });
 }

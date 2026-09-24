@@ -1,3 +1,4 @@
+import { requestsPerSecond } from './requests';
 import { mnemonicToPrivateKey, mnemonicValidate } from '@ton/crypto';
 import { WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 import type { Network } from './network';
@@ -7,7 +8,9 @@ export function parseEnvironment(env: Record<string, string | undefined>) {
   if (version !== 'v4r2' && version !== 'w5') throw new Error('Set WALLET_VERSION to v4r2 or w5 in .env');
   const network = env.TON_NETWORK?.trim() || 'mainnet';
   if (network !== 'mainnet' && network !== 'testnet') throw new Error('TON_NETWORK must be mainnet or testnet');
-  return { version, network, apiKey: env.TONCENTER_API_KEY?.trim() || undefined } as const;
+  const apiKey = env.TONCENTER_API_KEY?.trim() || undefined;
+  const rps = requestsPerSecond(env.TONCENTER_RPS, Boolean(apiKey));
+  return { version, network, apiKey, rps } as const;
 }
 export function walletFor(publicKey: Buffer, version: 'v4r2' | 'w5', network: Network) {
   return version === 'v4r2' ? WalletContractV4.create({ workchain: 0, publicKey }) : WalletContractV5R1.create({
