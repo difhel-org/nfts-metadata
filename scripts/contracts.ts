@@ -26,7 +26,7 @@ export function collectionData(admin: Address, nextIndex = 0n): Cell {
   return beginCell().storeAddress(admin).storeUint(nextIndex, 64)
     .storeRef(beginCell().storeRef(collectionMetadata()).storeRef(snake(ITEM_PREFIX)))
     .storeRef(ITEM_CODE)
-    .storeRef(beginCell().storeUint(0, 16).storeUint(1000, 16).storeAddress(admin))
+    .storeRef(beginCell().storeUint(100, 16).storeUint(1000, 16).storeAddress(admin))
     .endCell();
 }
 export function collectionFor(admin: Address) {

@@ -18,6 +18,10 @@ class ContractHandle implements Contract {
     const { stack } = await provider.get('get_collection_data', []);
     return { nextIndex: stack.readBigNumber(), metadata: stack.readCell(), admin: stack.readAddress() };
   }
+  async getRoyalties(provider: ContractProvider) {
+    const { stack } = await provider.get('royalty_params', []);
+    return { numerator: stack.readNumber(), denominator: stack.readNumber(), recipient: stack.readAddress() };
+  }
   async getItemAddress(provider: ContractProvider, index: number) {
     return (await provider.get('get_nft_address_by_index', [{ type: 'int', value: BigInt(index) }])).stack.readAddress();
   }
@@ -60,6 +64,10 @@ describe('pinned nft-v1.1 contracts in TVM', () => {
     const data = await collection.getCollection();
     expect(data.nextIndex).toBe(1n);
     expect(data.admin.equals(admin.address)).toBe(true);
+    const royalties = await collection.getRoyalties();
+    expect(royalties.numerator).toBe(100);
+    expect(royalties.denominator).toBe(1000);
+    expect(royalties.recipient.equals(admin.address)).toBe(true);
     const metadata = data.metadata.beginParse();
     expect(metadata.loadUint(8)).toBe(1);
     expect(metadata.loadStringTail()).toBe(COLLECTION_URL);

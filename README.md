@@ -93,7 +93,7 @@ processes or other wallet transactions while confirming/submitting.
 ## Stable deployment identity
 
 Collection StateInit contains the derived admin, index 0, pinned NFT code,
-zero royalties (0/1000, royalty address = admin), and these raw URLs:
+10% royalties (100/1000, royalty address = admin), and these raw URLs:
 
 - Collection: `https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/collection.json`
 - NFT prefix: `https://raw.githubusercontent.com/difhel-org/nfts-metadata/main/persik/tokens/`
