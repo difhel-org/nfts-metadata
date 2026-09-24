@@ -1,0 +1,23 @@
+{
+  "name": "nfts-metadata",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@ton/sandbox": "0.45.0",
+    "@ton/tolk-js": "1.4.2",
+    "@types/bun": "1.4.2",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "@ton/core": "0.63.1",
+    "@ton/crypto": "3.3.0",
+    "@ton/ton": "16.3.0"
+  },
+  "scripts": {
+    "info": "bun scripts/cli.ts info",
+    "mint": "bun scripts/cli.ts mint",
+    "build:contracts": "bun scripts/build-contracts.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
+  }
+}
